@@ -64,14 +64,20 @@ module RRedis
   class Engine
     def initialize
       @state = {}
+      @mutex = Mutex.new
     end
 
     def execute(command)
+      @mutex.lock
       case command.shift.upcase
       when "GET" then get(*command)
       when "SET" then set(*command)
       end
+    ensure
+      @mutex.unlock
     end
+
+    private
 
     def get(key)
       @state[key]
