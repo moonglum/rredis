@@ -1,3 +1,11 @@
 #!/usr/bin/env ruby
 
 require "rredis"
+require "socket"
+
+engine = RRedis::Engine.new
+
+Socket.tcp_server_loop(6379) do |connection|
+  # We currently only handle one connection at once
+  RRedis::Connection.connect(engine, connection)
+end
